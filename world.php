@@ -8,16 +8,44 @@ $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $p
 
     //gets the query, strip_tags removes any html tags
     $country = isset($_GET['country']) ? trim((strip_tags($_GET['country'] ))) : '';
-
-
+    $search  = isset($_GET['search']) ? $_GET['search'] : 'country';
+ 
+if ($search === 'city') 
+{
+  //cities is joined with countries
+  $statement = $conn->prepare( "SELECT cities.name, cities.district, cities.population FROM cities
+    JOIN countries ON cities.country_code = countries.code WHERE countries.name LIKE :country
+    ORDER BY cities.population DESC"
+  );
+  } else
+  {
     $statement = $conn->prepare("SELECT * FROM countries WHERE name LIKE :country");
-    $statement->execute(['country' => "%$country%"]);
-    $results = $statement->fetchAll(PDO::FETCH_ASSOC);
-    
+  }
 
+  $statement->execute(['country' => "%$country%"]);
+  $results = $statement->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<?php ?>
+<?php if (empty($results)): ?>
+<p>Country not found.</p>
+ 
+<?php elseif ($search === 'city'): ?>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>District</th>
+    <th>Population</th>
+  </tr>
+  <?php foreach ($results as $row): ?>
+    <tr>
+      <td><?= $row['name']; ?></td>
+      <td><?= $row['district']; ?></td>
+      <td><?= $row['population']; ?></td>
+    </tr>
+  <?php endforeach; ?>
+</table>
+
+<?php else: ?>
 <table>
   <tr>
     <th>Name</th>
@@ -34,4 +62,5 @@ $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $p
     </tr>
   <?php endforeach; ?>
 </table>
-<?php ?>
+
+<?php endif; ?>
