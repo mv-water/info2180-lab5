@@ -1,6 +1,6 @@
 //Gets the Id of the button and and when it is clicked it runs the function
 
-document.getElementById('lookup').addEventListener("click",function()
+document.getElementById('lookup-country').addEventListener("click",function()
 {   
 
     //create a object that can collect the input data from the search and stores it in a variable 
@@ -26,3 +26,5 @@ document.getElementById('lookup').addEventListener("click",function()
     httpRequest.open("GET", "world.php?country=" + encodeURIComponent(query), true );
     httpRequest.send();
 });
+
+
